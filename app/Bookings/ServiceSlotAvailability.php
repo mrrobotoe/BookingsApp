@@ -32,8 +32,6 @@ class ServiceSlotAvailability
             foreach ($periods as $period) {
                 $this->addAvailableEmployeeForPeriod($range, $period, $employee);
             }
-
-            // remove appointments from the period collection
         });
 
         $range = $this->removeEmptySlots($range);

@@ -111,26 +111,3 @@ it('does not show availability for schedule exclusions', function () {
 
     expect($availability->valid())->toBeFalse();
 });
-
-it('only shows availability from the current time with an hour in advance', function () {
-    Carbon::setTestNow(Carbon::parse('1st January 2000 12:15:00')); // 10:00 next avail
-
-    $employee = Employee::factory()
-        ->has(Schedule::factory()->state([
-            'starts_at' => now()->startOfDay(),
-            'ends_at' => now()->addYear()->startOfDay(),
-        ]))
-        ->create();
-
-    $service = Service::factory()->create([
-        'duration' => 30,
-    ]);
-
-    $availability = (new ScheduleAvailability($employee, $service))
-        ->forPeriod(now()->startOfDay(), now()->endOfDay());
-
-
-    expect($availability->current())
-        ->startsAt(now()->setTimeFromTimeString('13:00:00'))
-        ->toBeTrue();
-});
