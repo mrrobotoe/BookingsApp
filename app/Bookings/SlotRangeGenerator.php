@@ -22,7 +22,19 @@ class SlotRangeGenerator
         $days = CarbonPeriod::create($this->startsAt, '1 day', $this->endsAt);
 
         foreach ($days as $day) {
-            $collection->push($day);
+            $date = new Date($day);
+
+            $times = CarbonPeriod::create(
+                $day->startOfDay(),
+                sprintf('%d minutes', $interval),
+                $day->copy()->endOfDay()
+            );
+
+            foreach ($times as $time) {
+                $date->addSlot(new Slot($time));
+            }
+
+            $collection->push($date);
         }
 
         return $collection;
