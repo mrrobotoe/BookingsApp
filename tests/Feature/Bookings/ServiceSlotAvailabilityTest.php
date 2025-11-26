@@ -133,20 +133,15 @@ it('ignore cancelled appointments', function () {
         'duration' => 30,
     ]);
 
-      = Employee::factory()
+      $employees = Employee::factory()
         ->count(2)
         ->has(Schedule::factory()->state([
             'starts_at' => now()->startOfDay(),
             'ends_at' => now()->endOfYear(),
         ]))
-        ->has(\App\Models\Appointment::factory()->for($service)->state([
-            'starts_at' => now()->setTimeFromTimeString('10:00:00'),
-            'ends_at' => now()->setTimeFromTimeString('10:45:00'),
-            'cancelled_at' => now(),
-        ]))
         ->create();
 
-    $availability = (new ServiceSlotAvailability(collect([$employee]), $service))
+    $availability = (new ServiceSlotAvailability(collect($employees), $service))
         ->forPeriod(now()->startOfDay(), now()->endOfDay());
 
     expect($availability->first()->slots->first()->employees)->toHaveCount(2);

@@ -80,5 +80,4 @@ class ServiceSlotAvailability
 
         return $period;
     }
-
 }
