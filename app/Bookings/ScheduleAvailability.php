@@ -56,21 +56,6 @@ class ScheduleAvailability
             $date->copy()->setTimeFromTimeString($endsAt)->subMinutes($this->service->duration),
             Precision::MINUTE()
         ));
-
-        $this->excludeTimePassedToday();
-
-    }
-
-    public function subtractScheduleExclusion(ScheduleExclusion $exclusion): void
-    {
-        $this->periods = $this->periods->subtract(
-            Period::make(
-                $exclusion->starts_at,
-                $exclusion->ends_at,
-                Precision::MINUTE(),
-                Boundaries::EXCLUDE_END()
-            )
-        );
     }
 
     public function excludeTimePassedToday(): void
@@ -81,6 +66,18 @@ class ScheduleAvailability
                 now()->endOfHour(),
                 Precision::MINUTE(),
                 Boundaries::EXCLUDE_START()
+            )
+        );
+    }
+
+    public function subtractScheduleExclusion(ScheduleExclusion $exclusion): void
+    {
+        $this->periods = $this->periods->subtract(
+            Period::make(
+                $exclusion->starts_at,
+                $exclusion->ends_at,
+                Precision::MINUTE(),
+                Boundaries::EXCLUDE_END()
             )
         );
     }
