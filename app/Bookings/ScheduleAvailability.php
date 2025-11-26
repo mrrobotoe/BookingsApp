@@ -20,20 +20,20 @@ class ScheduleAvailability
     {
         $this->periods = new PeriodCollection();
     }
-    public function forPeriod(Carbon $startsAt, Carbon $endsAt): void
+    public function forPeriod(Carbon $startsAt, Carbon $endsAt): PeriodCollection
     {
         collect(CarbonPeriod::create($startsAt, $endsAt)->days())
             ->each(function ($date) {
                 $this->addAvailabilityFromSchedule($date);
 
                 $this->employee->scheduleExclusions->each(function(ScheduleExclusion $exclusion) {
-                    $this->substractScheduleExclusion($exclusion);
+                    $this->subtractScheduleExclusion($exclusion);
                 });
+
+                $this->excludeTimePassedToday();
             });
 
-        foreach ($this->periods as $period) {
-            dump($period->asString());
-        }
+        return $this->periods;
 
     }
 
@@ -61,7 +61,7 @@ class ScheduleAvailability
 
     }
 
-    public function substractScheduleExclusion(ScheduleExclusion $exclusion): void
+    public function subtractScheduleExclusion(ScheduleExclusion $exclusion): void
     {
         $this->periods = $this->periods->subtract(
             Period::make(
