@@ -16,7 +16,6 @@ class ServiceSlotAvailability
 {
     public function __construct(protected Collection $employees, protected Service $service)
     {
-
     }
 
     public function forPeriod(Carbon $startsAt, Carbon $endsAt)
