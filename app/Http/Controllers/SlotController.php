@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Bookings\Date;
 use App\Bookings\ServiceSlotAvailability;
 use App\Bookings\Slot;
 use App\Models\Employee;
@@ -12,12 +11,12 @@ use Illuminate\Http\Request;
 
 class SlotController extends Controller
 {
-    public function __invoke(Employee $employee, Service $service, Date $date)
+    public function __invoke(Employee $employee, Service $service, Request $request)
     {
         $availability = (new ServiceSlotAvailability(collect([$employee]), $service))
             ->forPeriod(
-                Carbon::parse($date->date)->startOfDay(),
-                Carbon::parse($date->date)->endOfDay()
+                Carbon::parse($request->date)->startOfDay(),
+                Carbon::parse($request->date)->endOfDay()
             );
 
         return response()->json([

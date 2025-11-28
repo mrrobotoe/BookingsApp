@@ -24,6 +24,11 @@ class Appointment extends Model
         });
     }
 
+    public function isCancelled(): bool
+    {
+        return !is_null($this->cancelled_at);
+    }
+
     public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);

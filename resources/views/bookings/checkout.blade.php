@@ -2,6 +2,7 @@
     <form
         x-on:submit.prevent="submit"
         x-data="{
+            error: null,
             form: {
                 employee_id: {{ $employee->id }},
                 service_id: {{ $service->id }},
@@ -13,8 +14,10 @@
 
             submit() {
                 axios.post('{{ route('appointments') }}', this.form).then((response) => {
-                    console.log(response.data);
-                })
+                    window.location = response.data.redirect;
+                }).catch((error) => {
+                    this.error = error.response.data.error;
+                });
             }
         }"
 
@@ -28,7 +31,7 @@
                 <div class="w-full">
                     <div class="flex justify-between">
                         <div class="font-semibold">
-                            {{ $service->title }}
+                            {{ $service->title }} ({{ $service->duration }} minutes)
                         </div>
                         <div class="text-sm">
                             {{ $service->price }}
@@ -65,7 +68,7 @@
                         LockPlugin: {
                             minDate: new Date(),
                             filter (date, picked) {
-                                return !Object.keys(availableDates).includes(date.toISOString().split('T')[0])
+                                return !Object.keys(availableDates).includes(date.format('YYYY-MM-DD'))
                             }
                         },
                         setup (picker) {
@@ -99,6 +102,7 @@
             x-data="{
                 slots: [],
                 fetchSlots (event) {
+                    console.log('Fetching slots for date:', form.date)
                     axios.get(`{{ route('slots', [$employee, $service]) }}?date=${form.date}`).then((response) => {
                         this.slots = response.data.times
                     })
@@ -123,6 +127,7 @@
 
         <div>
             <h2 class="text-lg font-medium mt-4">3. Your details and book</h2>
+            <div x-text="error" x-show="error" x-cloak class="bg-slate-900 text-white py-4 px-6 rounded-lg mt-3"></div>
             <div class="mt-6" x-show="form.time" x-cloak>
                 <div>
                     <label for="name" class="sr-only">Your name</label>
